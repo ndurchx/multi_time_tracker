@@ -4,6 +4,7 @@
   <%= stylesheet_link_tag "multi_time_tracker", :plugin => "multi_time_tracker" %>
 <% end %>
 
+<%= button_to((l :multi_time_tracker_export_all_button),  :action => 'export_all') %>
 
 <table class="list">
   <tr>
@@ -34,7 +35,7 @@
         <td><%= link_to(time.issue, issue_path(time.issue)) %></td>
         <td><%= f.text_field :comment, :required => true %></td>
         <td><%= f.select :activity_id, activity_collection_for_select_options(@time_entry), :required => true %></td>
-        <td><%= time.spent_seconds %></td>
+        <td id="active_time_logging"><%= @active_logging_time %></td>
         <td>
           <% if time.active %>
             <%= f.submit(l(:multi_time_tracker_check_out_button)) %>
