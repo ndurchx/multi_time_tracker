@@ -1,0 +1,8 @@
+tr.time_logger.standard {
+  text-align: center;
+}
+
+tr.time_logger.between_header {
+  background-color: #F6F7F8;
+  font-weight: bold;
+}

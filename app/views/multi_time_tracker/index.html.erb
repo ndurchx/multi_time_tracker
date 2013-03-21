@@ -1,0 +1,55 @@
+<h2>MultiTimeTrackerController#index</h2>
+
+<% content_for :header_tags do %>
+  <%= stylesheet_link_tag "multi_time_tracker", :plugin => "multi_time_tracker" %>
+<% end %>
+
+
+<table class="list">
+  <tr>
+    <th><%= l(:multi_time_tracker_issue_table_head) %></th>
+    <th><%= l(:multi_time_tracker_comment_table_head) %></th>
+    <th><%= l(:multi_time_tracker_activity_table_head) %></th>
+    <th><%= l(:multi_time_tracker_time_table_head) %></th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+  
+  <% curr_project = nil %>
+  <% even = true %>
+  
+  <% @tracked_times.each do |time| %>
+
+    <% if(curr_project != time.project) %>
+      <% even = true %>
+      <% curr_project = time.project %>
+      <tr class="time_logger between_header">
+        <td colspan="7"><%= link_to(curr_project, project_path(curr_project)) %></td>
+      </tr>
+    <% end %>
+    
+    <tr class="standard time_logger created-by-me <% if time.active %>active<% end %> <% if even %>even<% else %>odd<% end %>">
+      <%= form_for(time, :url => { :action => "form" }, :method => :post) do |f| %>
+        <td><%= link_to(time.issue, issue_path(time.issue)) %></td>
+        <td><%= f.text_field :comment, :required => true %></td>
+        <td><%= f.select :activity_id, activity_collection_for_select_options(@time_entry), :required => true %></td>
+        <td><%= time.spent_seconds %></td>
+        <td>
+          <% if time.active %>
+            <%= f.submit(l(:multi_time_tracker_check_out_button)) %>
+          <% else %>
+            <%= f.submit(l(:multi_time_tracker_check_in_button)) %></td>
+          <% end %>
+        </td>
+        <td><%= f.submit(l(:multi_time_tracker_destroy_button)) %></td>
+        <%= f.hidden_field(:id, :value => time.id) %>
+      <% end %>
+    </tr>
+    
+    <% even = even ? false : true %>
+      
+  <% end %>
+  
+</table>
+
