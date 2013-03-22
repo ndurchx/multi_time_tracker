@@ -30,20 +30,6 @@ class MultiTimeTrackerController < ApplicationController
       format.html { redirect_to :action => :index }
     end
   end
-  
-  def form
-    case params[:commit]
-      when l(:multi_time_tracker_check_in_button)
-        check_in
-      when l(:multi_time_tracker_check_out_button)
-        check_out
-      else 
-        respond_to do |format|
-          flash[:error] = l(:multi_time_tracker_form_action_error)
-          format.html { redirect_to :action => :index }
-        end
-    end
-  end
 
   def destroy
     check_out_logging(@logged_time) if @logged_time.active
