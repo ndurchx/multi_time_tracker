@@ -2,6 +2,7 @@
 
 <% content_for :header_tags do %>
   <%= stylesheet_link_tag "multi_time_tracker", :plugin => "multi_time_tracker" %>
+  <%= javascript_include_tag "upcount", :plugin => "multi_time_tracker" %>
 <% end %>
 
 <%= button_to((l :multi_time_tracker_export_all_button),  :action => 'export_all') %>
@@ -35,14 +36,15 @@
         <td><%= link_to(time.issue, issue_path(time.issue)) %></td>
         <td><%= f.text_field :comment, :required => true %></td>
         <td><%= f.select :activity_id, activity_collection_for_select_options(@time_entry), :required => true %></td>
-        <td id="active_time_logging"><%= @active_logging_time %></td>
-        <td>
+        
           <% if time.active %>
-            <%= f.submit(l(:multi_time_tracker_check_out_button)) %>
+            <td id="active_time_logging"><%= formatted_active_time(time) %></td>
+            <td><%= f.submit(l(:multi_time_tracker_check_out_button)) %></td>
           <% else %>
-            <%= f.submit(l(:multi_time_tracker_check_in_button)) %></td>
+            <td><%= formatted_time(time) %></td>
+            <td><%= f.submit(l(:multi_time_tracker_check_in_button)) %></td>
           <% end %>
-        </td>
+          
         <td><%= f.submit(l(:multi_time_tracker_destroy_button)) %></td>
         <%= f.hidden_field(:id, :value => time.id) %>
       <% end %>
@@ -54,3 +56,11 @@
   
 </table>
 
+<script type="text/javascript">
+  if(window.addEventListener){
+      window.addEventListener('load', startLoop, false); //W3C
+  }
+  else{
+      window.attachEvent('onload', startLoop); //IE
+  }
+</script>

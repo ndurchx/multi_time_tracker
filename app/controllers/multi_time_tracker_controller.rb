@@ -7,8 +7,6 @@ class MultiTimeTrackerController < ApplicationController
   def index
     @tracked_times = LoggedTime.find_all_by_user_id(User.current.id)
     @tracked_times.sort!{|x,y| x.project_id <=> y.project_id}
-    active_logging = LoggedTime.find_by_user_id_and_active(User.current.id, true)
-    @active_logging_time = active_logging.nil? ? nil : formatted_time(active_logging)
   end
 
   def create
@@ -161,12 +159,6 @@ class MultiTimeTrackerController < ApplicationController
     logged_time.spent_seconds = 0
     logged_time.comment = ""
     logged_time.save
-  end
-  
-  def formatted_time(active_logging)
-    seconds_at_all = active_logging.spent_seconds + (Time.now - active_logging.activated_at)
-    t = Time.new(0) + seconds_at_all
-    return (t.yday > 1 ? "#{t.yday-1}:#{t.hour}:#{t.min}:#{t.sec}" : "#{t.hour}:#{t.min}:#{t.sec}")
   end
   
 end
