@@ -27,3 +27,8 @@ en:
   multi_time_tracker_export_all_button: "Export all"
   multi_time_tracker_user_not_logged_in: "You have to be logged in to use this functionality"
   multi_time_tracker_check_in_out_unsuccessful: "Error while checking out/in"
+  multi_time_tracker_update_successful: "Update successful"
+  multi_time_tracker_update_unsuccessful: "An error occured"
+  multi_time_tracker_edit_submit_button: "Save"
+  multi_time_tracker_edit_legend: "Edit"
+  field_spent_seconds: "Spent seconds"

@@ -7,7 +7,7 @@ To install this plugin just place it in your plugins folder and run
 
 USAGE:
 This plugin is very simple to use. Just navigate to the issues you want to 
-measure the times you spent on them and click the "Add to Multi Time tracker"
+measure the times you spent on them and click the "Add to Multi Time Tracker"
 button. You can add an issue indefinetly so you can track multiple activities
 on one issue at one time.
 Then you can navigate to the Multi Time Tracker itself and it will show you 
@@ -22,3 +22,4 @@ big request.
 And if your work is done you can simply delete an entry by clicking on the realted 
 button. Even is you are checked in on that entry at that time you will automatically 
 be checked out and the measured time will be exported first.
+To get a logged time exported it has to be at least 28 seconds.

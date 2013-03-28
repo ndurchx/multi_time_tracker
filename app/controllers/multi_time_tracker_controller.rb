@@ -3,14 +3,15 @@ class MultiTimeTrackerController < ApplicationController
 
   before_filter :user_logged_in
   before_filter :authorize_global, :only => [:export, :export_all, :destroy]
-  before_filter :find_project, :authorize, :only => :create
+  before_filter :find_logged_time, :only => [:edit, :destroy, :export]
+  before_filter :find_project, :authorize, :only => :add
 
   def index
     @tracked_times = LoggedTime.find_all_by_user_id(User.current.id)
     @tracked_times.sort!{|x,y| x.project_id <=> y.project_id}
   end
 
-  def create
+  def add
     @logged_time = LoggedTime.new
     @logged_time.issue_id = @issue.id
     @logged_time.user_id = User.current.id
@@ -30,10 +31,27 @@ class MultiTimeTrackerController < ApplicationController
       format.html { redirect_to :action => :index }
     end
   end
+  
+  def edit
+  end
+  
+  def update
+    @logged_time = LoggedTime.find(params[:logged_time][:id])
+    @logged_time.spent_seconds = params[:logged_time][:spent_seconds]
+    
+    respond_to do |format|
+      if @logged_time.update_attributes(params[:logged_time])
+        flash[:notice] = l(:multi_time_tracker_update_successful)
+      else
+        flash[:error] = l(:multi_time_tracker_update_unsuccessful)
+      end
+      format.html { redirect_to :action => :index }
+    end
+  end
 
   def destroy
     check_out_logging(@logged_time) if @logged_time.active
-    export(@logged_time)
+    export_to_timelog(@logged_time)
     
     respond_to do |format|
       if @logged_time.destroy
@@ -104,7 +122,6 @@ class MultiTimeTrackerController < ApplicationController
   end
   
   def export 
-    @logged_time = LoggedTime.find_by_id(params[:id])
     check_out_logging(@logged_time) if @logged_time.active
     
     respond_to do |format|
@@ -132,6 +149,10 @@ class MultiTimeTrackerController < ApplicationController
     render_404
   end
   
+  def find_logged_time
+    @logged_time = LoggedTime.find_by_id(params[:id])
+  end
+  
   def user_logged_in
     unless User.current.logged?
       flash[:error] = l(:multi_time_tracker_user_not_logged_in)
@@ -141,17 +162,19 @@ class MultiTimeTrackerController < ApplicationController
   
   def check_out_logging(logged_time)
     logged_time.active = false
-    logged_time.spent_seconds += (Time.now.to_f - logged_time.activated_at.to_f)
+    logged_time.spent_seconds += (Time.now.to_f - logged_time.activated_at.to_f).to_i
   end
   
   def export_to_timelog(logged_time)
     spent_hours = logged_time.spent_seconds/60.0/60.0
     
-    if spent_hours > 0
+    if spent_hours > 0.008
       time_entry = TimeEntry.new(:project => logged_time.project, :issue => logged_time.issue, :user => logged_time.user, :spent_on => User.current.today)
       time_entry.safe_attributes = { "spent_on" => User.current.today, "hours" => spent_hours, "activity_id" => logged_time.activity_id, "comments" => logged_time.comment }
       return time_entry.save
     end
+    
+    return true
   end
   
   def reset(logged_time)

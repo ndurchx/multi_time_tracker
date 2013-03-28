@@ -1,0 +1,12 @@
+<h2><%= l(:multi_time_tracker_header) %></h2>
+
+<fieldset class="box tabular">
+  <legend><%= l(:multi_time_tracker_edit_legend) %></legend>
+  <%= labelled_form_for @logged_time do |f| %>
+    <p><%= f.text_field :comment, :required => true %></p>
+    <p><%= f.select :activity_id, activity_collection_for_select_options(@time_entry), :required => true %></p>
+    <p><%= f.text_field :spent_seconds, :required => true %></p>
+    <%= f.hidden_field :id %>
+    <p><%= f.submit l(:multi_time_tracker_edit_submit_button) %></p>
+  <% end %>
+</fieldset>

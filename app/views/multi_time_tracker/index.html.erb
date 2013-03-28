@@ -10,6 +10,7 @@
 <table class="list">
   <tr>
     <th></th>
+    <th></th>
     <th><%= l(:multi_time_tracker_issue_table_head) %></th>
     <th><%= l(:multi_time_tracker_comment_table_head) %></th>
     <th><%= l(:multi_time_tracker_activity_table_head) %></th>
@@ -38,6 +39,8 @@
         <td>
           <% if time.active %>
             <%= image_tag('hourglass.png', :plugin => 'multi_time_tracker') %>
+          <% else %>
+            <%= link_to(time.id, :action => 'edit', :id => time.id) %>
           <% end %>
         </td>
         <td><%= link_to(time.issue, issue_path(time.issue)) %></td>
@@ -54,7 +57,7 @@
       <% end %>
       
       <td><%= button_to(l(:multi_time_tracker_export_button), :action => 'export', :id => time.id) %></td>
-      <td><%= button_to(l(:multi_time_tracker_destroy_button), :action => 'destroy', :id => time.id) %></td>
+      <td><%= button_to(l(:multi_time_tracker_destroy_button), time, :method => 'delete') %></td>
     </tr>
     
     <% even = even ? false : true %>

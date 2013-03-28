@@ -27,3 +27,8 @@ de:
   multi_time_tracker_export_all_button: "Alles Exportieren"
   multi_time_tracker_user_not_logged_in: "Sie müssen sich einloggen um diese Funktionalität zu benutzen"
   multi_time_tracker_check_in_out_unsuccessful: "Fehler beim Ein/Auschecken"
+  multi_time_tracker_update_successful: "Update erfolgreich"
+  multi_time_tracker_update_unsuccessful: "Ein Fehler ist aufgetreten"
+  multi_time_tracker_edit_submit_button: "Speichern"
+  multi_time_tracker_edit_legend: "Bearbeiten"
+  field_spent_seconds: "Aufgewendete Sekunden"
