@@ -48,7 +48,7 @@
         <td><%= f.select :activity_id, activity_collection_for_select_options(@time_entry), :required => true %></td>
         
         <% if time.active %>
-          <td id="active_time_logging"><%= formatted_active_time(time) %></td>
+          <td id="active_time_logging"><%= formatted_time(time) %></td>
           <td><%= f.submit(l(:multi_time_tracker_check_out_button)) %></td>
         <% else %>
           <td><%= formatted_time(time) %></td>
