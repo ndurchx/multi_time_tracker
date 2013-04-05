@@ -2,9 +2,10 @@ class MultiTimeTrackerController < ApplicationController
   unloadable
 
   before_filter :user_logged_in
-  before_filter :authorize_global, :only => [:export, :export_all, :destroy]
+  before_filter :authorize_global, :only => [:export, :export_all, :export_to_timelog, :destroy]
   before_filter :find_logged_time, :only => [:edit, :destroy, :export]
   before_filter :find_project, :authorize, :only => :add
+  before_filter :is_time_tracking_active?, :only => :add
 
   def index
     @tracked_times = LoggedTime.find_all_by_user_id(User.current.id)
@@ -51,10 +52,9 @@ class MultiTimeTrackerController < ApplicationController
 
   def destroy
     check_out_logging(@logged_time) if @logged_time.active
-    export_to_timelog(@logged_time)
     
     respond_to do |format|
-      if @logged_time.destroy
+      if export_to_timelog(@logged_time) && @logged_time.destroy
         flash[:notice] = l(:multi_time_tracker_destroy_successful)
       else
         flash[:error] = l(:multi_time_tracker_destroy_unsuccessful)
@@ -166,9 +166,10 @@ class MultiTimeTrackerController < ApplicationController
   end
   
   def export_to_timelog(logged_time)
+    return false if logged_time.project.module_enabled?(:time_tracking).nil?
     spent_hours = logged_time.spent_seconds/60.0/60.0
     
-    if spent_hours > 0.008
+    if spent_hours > 0.008 
       time_entry = TimeEntry.new(:project => logged_time.project, :issue => logged_time.issue, :user => logged_time.user, :spent_on => User.current.today)
       time_entry.safe_attributes = { "spent_on" => User.current.today, "hours" => spent_hours, "activity_id" => logged_time.activity_id, "comments" => logged_time.comment }
       return time_entry.save
@@ -181,6 +182,12 @@ class MultiTimeTrackerController < ApplicationController
     logged_time.spent_seconds = 0
     logged_time.comment = ""
     logged_time.save
+  end
+  
+  def is_time_tracking_active?
+    if (@project.module_enabled? :time_tracking).nil?
+      deny_access
+    end
   end
   
 end
