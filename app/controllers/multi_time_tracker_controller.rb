@@ -34,6 +34,8 @@ class MultiTimeTrackerController < ApplicationController
   end
   
   def edit
+    logged_time = LoggedTime.find(params[:id])
+    redirect_to :action => :index and return if logged_time.active
   end
   
   def update
