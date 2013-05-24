@@ -11,7 +11,6 @@ Redmine::Plugin.register :multi_time_tracker do
   author_url ''
 
 	requires_redmine :version_or_higher => '2.0.0'
-
-  permission :add_issue_to_multi_time_tracker, { :multi_time_tracker => :add }
+  
   menu :top_menu, :multi_time_tracker, { :controller => 'multi_time_tracker', :action => 'index' }, :caption => :caption_multi_time_tracker, :if => Proc.new{ User.current.logged? }
 end
