@@ -2,7 +2,7 @@ class MultiTimeTrackerController < ApplicationController
   unloadable
 
   before_filter :user_logged_in
-  before_filter :authorize_global, :only => [:export, :export_all, :export_to_timelog, :destroy]
+  #before_filter :authorize_global, :only => [:export, :export_all, :export_to_timelog, :destroy]
   before_filter :find_logged_time, :only => [:edit, :destroy, :export]
   before_filter :find_project, :only => :add
   before_filter :is_time_tracking_active?, :only => :add
