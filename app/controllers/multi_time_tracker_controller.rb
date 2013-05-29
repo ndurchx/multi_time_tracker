@@ -187,7 +187,8 @@ class MultiTimeTrackerController < ApplicationController
   
   def is_time_tracking_active?
     if (@project.module_enabled? :time_tracking).nil?
-      deny_access
+      flash[:error] = l(:multi_time_tracker_time_tracking_inactive)
+      redirect_to request.referer
     end
   end
   
