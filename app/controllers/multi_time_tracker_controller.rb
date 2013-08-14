@@ -31,16 +31,16 @@ class MultiTimeTrackerController < ApplicationController
       format.html { redirect_to :action => :index }
     end
   end
-  
+
   def edit
     logged_time = LoggedTime.find(params[:id])
-    redirect_to :action => :index and return if logged_time.active
+    redirect_to :action => :index  if logged_time.active
   end
-  
+
   def update
     @logged_time = LoggedTime.find(params[:logged_time][:id])
     @logged_time.spent_seconds = params[:logged_time][:spent_seconds]
-    
+
     respond_to do |format|
       if @logged_time.update_attributes(params[:logged_time])
         flash[:notice] = l(:multi_time_tracker_update_successful)
@@ -53,7 +53,7 @@ class MultiTimeTrackerController < ApplicationController
 
   def destroy
     check_out_logging(@logged_time) if @logged_time.active
-    
+
     respond_to do |format|
       if export_to_timelog(@logged_time) && @logged_time.destroy
         flash[:notice] = l(:multi_time_tracker_destroy_successful)
@@ -66,12 +66,12 @@ class MultiTimeTrackerController < ApplicationController
 
   def check_in_out
     @logged_time = LoggedTime.find_by_id(params[:logged_time][:id])
-  
+
     if @logged_time.active
       check_out_logging(@logged_time)
     else
       current_checked_in = LoggedTime.find_by_user_id_and_active(User.current.id, true)
-      
+
       unless current_checked_in.nil?
         check_out_logging(current_checked_in)
         current_checked_in.save
@@ -82,7 +82,7 @@ class MultiTimeTrackerController < ApplicationController
       @logged_time.activity_id  = params[:logged_time][:activity_id]
       @logged_time.comment      = params[:logged_time][:comment]
     end
-    
+
     respond_to do |format|
       if @logged_time.save
         if @logged_time.active
@@ -92,8 +92,8 @@ class MultiTimeTrackerController < ApplicationController
         end
       else
         flash[:error] = l(:multi_time_tracker_check_in_out_unsuccessful)
-      end  
-      
+      end
+
       format.html { redirect_to :action => :index }
     end
   end
@@ -101,16 +101,16 @@ class MultiTimeTrackerController < ApplicationController
   def export_all
     logged_times = LoggedTime.find_all_by_user_id(User.current.id)
     error        = false
-    
+
     logged_times.each do |time|
       check_out_logging(time) if time.active
       if export_to_timelog(time)
-        reset(time) 
+        reset(time)
       else
         error = true
       end
     end
-    
+
     respond_to do |format|
       if error
         flash[:notice] = l(:multi_time_tracker_export_all_unsuccessful)
@@ -139,8 +139,8 @@ class MultiTimeTrackerController < ApplicationController
 
   def correct
   end
-  
-  
+
+
   private
   
   def find_project
