@@ -1,25 +1,36 @@
-= multi_time_tracker
-
-INSTALLATION:
-To install this plugin just place it in your plugins folder and run
-'rake redmine:plugins:migrate'. 
+= Multi Time Tracker
 
 
-USAGE:
-This plugin is very simple to use. Just navigate to the issues you want to 
-measure the times you spent on them and click the "Add to Multi Time Tracker"
-button. You can add an issue indefinetly so you can track multiple activities
-on one issue at one time.
-Then you can navigate to the Multi Time Tracker itself and it will show you 
-a nice list of all added entries sorted by the related project.
-In this list you can check in/out on a logging. Checking in means you start to work
-on a specific activity and want to measure the time. You can Check in/out around
-as much as you want and you get checked out of the current active entry if you check
-into another.
-If you want to export your measured times to the real time log of redmine
-you are free to do. Either every single entry or all entries together in one
-big request. 
-And if your work is done you can simply delete an entry by clicking on the realted 
-button. Even is you are checked in on that entry at that time you will automatically 
-be checked out and the measured time will be exported first.
-To get a logged time exported it has to be at least 28 seconds.
+== Installation
+1. To install this plugin just clone it in your redmine's plugins folder 
+2. Run 'rake redmine:plugins:migrate'
+3. Restart your webserver
+
+
+== Prerequisites
+* There must be any project with th 'Time tracking' module enabled
+
+
+== Usage
+=== Adding an issue to the table
+In each issues description box a new link 'Add to multi time tracker' is added. By clicking this link, you add that issue
+to the issue table once. You will be redirected to that table. You can add the same issue multiple times so you can follow 
+multiple tasks on the same issue.
+
+=== Using the issue table
+At the top left menu a new link 'Multi Time Tracker' appeared. This link leads to the time tracker table.
+There you can check in and check out issues and export them to the redmine time management.
+Checking in and out means, that from the moment of checking in a row will start time measurement for this row and checking out 
+means stopping the measurement
+If you delete a row of the issue table, this row will be checked out and exported first, so if you made a mistake,
+first check out of that issue (if neccessary) and change the spent time of that row to zero. Finally you can delete it
+without exporting anything to the redmine time management.
+Checking in a row will check out the current active row first (so there can be only one active row per user at a time).
+
+== What comes next
+Currently I'm working on ajax support for updating the comment or activity of a row as well as cloning an issue instead of 
+navigation back to an already added issue and add it again to have it multiple times in the table.
+With that stuff there will be an improved view, too, with issue grouping and the possibility to order the rows of the table.
+
+== License
+This plugin is published under the GPLv2.
