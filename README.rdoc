@@ -8,7 +8,8 @@
 
 
 == Prerequisites
-* There must be any project with th 'Time tracking' module enabled
+* Installation process must be done
+* There must be any project with the 'Time tracking' module enabled
 
 
 == Usage

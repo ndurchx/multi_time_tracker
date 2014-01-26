@@ -2,11 +2,25 @@ class MultiTimeTrackerController < ApplicationController
   unloadable
 
   before_filter :user_logged_in
-  before_filter :find_logged_time, :only => [:edit, :destroy, :export]
-  before_filter :find_project, :only => :add
   before_filter :is_time_tracking_active?, :only => :add
+  before_filter :find_logged_time, :only => [:action] # Edit needs it, too
+  before_filter :save_current_data, :only => [:action]
+  before_filter :find_project, :only => :add
+  
 
   helper :timelog
+  
+  def action
+    if params[:check_in]
+      check_in
+    elsif params[:check_out]
+      check_out
+    elsif params[:destroy]
+      destroy
+    elsif params[:export]
+      export
+    end  
+  end
 
   def index
     @tracked_times = LoggedTime.find_all_by_user_id(User.current.id)
@@ -14,7 +28,7 @@ class MultiTimeTrackerController < ApplicationController
   end
 
   def add
-    @logged_time = LoggedTime.new
+    @logged_time = LoggedTime
     @logged_time.issue_id = @issue.id
     @logged_time.user_id = User.current.id
     @logged_time.project_id = @project.id
@@ -31,6 +45,7 @@ class MultiTimeTrackerController < ApplicationController
         flash[:error] = l(:multi_time_tracker_tracking_not_created)
       end
       format.html { redirect_to :action => :index }
+      format.js {}
     end
   end
 
@@ -50,53 +65,55 @@ class MultiTimeTrackerController < ApplicationController
         flash[:error] = l(:multi_time_tracker_update_unsuccessful)
       end
       format.html { redirect_to :action => :index }
+      format.js {}
     end
   end
 
   def destroy
-    check_out_logging(@logged_time) if @logged_time.active
+    @logged_time.check_out
 
     respond_to do |format|
-      if export_to_timelog(@logged_time) && @logged_time.destroy
+      if @logged_time.export && @logged_time.destroy
         flash[:notice] = l(:multi_time_tracker_destroy_successful)
       else
         flash[:error] = l(:multi_time_tracker_destroy_unsuccessful)
       end
       format.html { redirect_to :action => :index }
+      format.js {}
     end
   end
-
-  def check_in_out
-    @logged_time = LoggedTime.find_by_id(params[:logged_time][:id])
-
-    if @logged_time.active
-      check_out_logging(@logged_time)
-    else
-      current_checked_in = LoggedTime.find_by_user_id_and_active(User.current.id, true)
-
-      unless current_checked_in.nil?
-        check_out_logging(current_checked_in)
-        current_checked_in.save
-      end
-
-      @logged_time.touch(:activated_at)
-      @logged_time.active       = true
-      @logged_time.activity_id  = params[:logged_time][:activity_id]
-      @logged_time.comment      = params[:logged_time][:comment]
-    end
-
+  
+  def check_in
+    current = LoggedTime.current
+    current.check_out if current
+    
+    @logged_time.check_in(params[:logged_time])
+    
     respond_to do |format|
-      if @logged_time.save
-        if @logged_time.active
-          flash[:notice] = l(:multi_time_tracker_check_in_successful)
-        else
-          flash[:notice] = l(:multi_time_tracker_check_out_successful)
-        end
+      if (current.nil? || current.save) && @logged_time.save
+        flash[:notice] = l(:multi_time_tracker_check_in_successful)
       else
-        flash[:error] = l(:multi_time_tracker_check_in_out_unsuccessful)
+        flash[:notice] = l(:multi_time_tracker_check_out_successful)
       end
 
       format.html { redirect_to :action => :index }
+      format.js {}
+    end
+  end
+  
+  def check_out
+    @logged_time.check_out
+    @logged_time.save
+    
+    respond_to do |format|
+      if @logged_time.save 
+        flash[:notice] = l(:multi_time_tracker_check_out_successful)
+      else
+        flash[:notice] = l(:multi_time_tracker_check_out_successful)
+      end
+      
+      format.html { redirect_to :action => :index }
+      format.js {}
     end
   end
 
@@ -105,9 +122,9 @@ class MultiTimeTrackerController < ApplicationController
     error        = false
 
     logged_times.each do |time|
-      check_out_logging(time) if time.active
-      if export_to_timelog(time)
-        reset(time)
+      time.check_out
+      if time.export
+        time.reset
       else
         error = true
       end
@@ -125,25 +142,26 @@ class MultiTimeTrackerController < ApplicationController
   end
 
   def export
-    check_out_logging(@logged_time) if @logged_time.active
+    @logged_time.check_out
 
     respond_to do |format|
-      if export_to_timelog(@logged_time)
-        reset(@logged_time)
+      if @logged_time.export
+        @logged_time.reset and @logged_time.save        
         flash[:notice] = l(:multi_time_tracker_export_successful)
       else
         flash[:error] = l(:multi_time_tracker_export_unsuccessful)
       end
 
       format.html { redirect_to :action => :index }
+      format.js {}
     end
   end
 
-  def correct
-  end
-
-
   private
+  
+  def save_current_data
+    @logged_time.update_attributes(params[:logged_time])
+  end
 
   def find_project
     @issue = Issue.find_by_id(params[:issue_id])
@@ -153,7 +171,9 @@ class MultiTimeTrackerController < ApplicationController
   end
 
   def find_logged_time
-    @logged_time = LoggedTime.find_by_id(params[:id])
+    @logged_time = LoggedTime.find_by_id(params[:logged_time][:id])
+    rescue ActiveRecord::RecordNotFound
+    render_404
   end
 
   def user_logged_in
@@ -161,30 +181,6 @@ class MultiTimeTrackerController < ApplicationController
       flash[:error] = l(:multi_time_tracker_user_not_logged_in)
       redirect_to :home
     end
-  end
-
-  def check_out_logging(logged_time)
-    logged_time.active = false
-    logged_time.spent_seconds += (Time.now.to_f - logged_time.activated_at.to_f).to_i
-  end
-
-  def export_to_timelog(logged_time)
-    return false if logged_time.project.module_enabled?(:time_tracking).nil?
-    spent_hours = logged_time.spent_seconds/60.0/60.0
-
-    if spent_hours > 0.008
-      time_entry = TimeEntry.new(:project => logged_time.project, :issue => logged_time.issue, :user => logged_time.user, :spent_on => User.current.today)
-      time_entry.safe_attributes = { "spent_on" => User.current.today, "hours" => spent_hours, "activity_id" => logged_time.activity_id, "comments" => logged_time.comment }
-      return time_entry.save
-    end
-
-    return true
-  end
-
-  def reset(logged_time)
-    logged_time.spent_seconds = 0
-    logged_time.comment = ""
-    logged_time.save
   end
 
   def is_time_tracking_active?
