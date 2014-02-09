@@ -64,7 +64,7 @@ class MultiTimeTrackerController < ApplicationController
 
   def update
     logged_time = LoggedTime.find(params[:logged_time][:id])
-    logged_time.spent_hours   = params[:logged_time][:spent_hours]
+    logged_time.spent_hours   = params[:logged_time][:spent_hours_short]
     logged_time.comment       = params[:logged_time][:comment]
     logged_time.activity_id   = params[:logged_time][:activity_id]
 
@@ -72,7 +72,7 @@ class MultiTimeTrackerController < ApplicationController
       if logged_time.save
         flash[:notice] = l(:multi_time_tracker_update_successful)
       else
-        flash[:error] = l(:multi_time_tracker_update_unsuccessful)
+        #flash[:error] = l(:multi_time_tracker_update_unsuccessful)
       end
       format.html { redirect_to :action => :index }
     end
