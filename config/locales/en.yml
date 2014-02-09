@@ -31,4 +31,5 @@ en:
   multi_time_tracker_update_unsuccessful: "An error occured"
   multi_time_tracker_edit_submit_button: "Save"
   multi_time_tracker_edit_legend: "Edit"
-  field_spent_seconds: "Spent seconds"
+  field_spent_hours_short: "Spent hours"
+  field_comment: "Kommentar"

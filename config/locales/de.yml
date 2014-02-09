@@ -32,4 +32,5 @@ de:
   multi_time_tracker_edit_submit_button: "Speichern"
   multi_time_tracker_edit_legend: "Bearbeiten"
   multi_time_tracker_time_tracking_inactive: "Die Zeiterfassung ist in diesem Projekt inaktiv"
-  field_spent_seconds: "Aufgewendete Sekunden"
+  field_spent_hours_short: "Aufgewendete Stunden"
+  field_comment: "Kommentar"

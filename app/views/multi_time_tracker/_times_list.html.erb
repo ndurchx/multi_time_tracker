@@ -1,0 +1,7 @@
+<ol id="tracked_times" class="list">
+  <% @tracked_times.each do |time| %>
+    <li id="logged_data_<%= time.id %>" class="<%= cycle("even", "odd") %> <% if time.active %>active_time_logging<% end %>">
+      <%= render :partial => "time_data", :locals => {:time => time} %>
+    </li>
+  <% end %>
+</ol>

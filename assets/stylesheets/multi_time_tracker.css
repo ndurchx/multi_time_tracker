@@ -1,12 +1,8 @@
-tr.time_logger.standard {
-  text-align: center;
-}
-
-tr.time_logger.between_header {
-  background-color: #FFEEEA;
-  font-weight: bold;
-}
-
-td#active_time_logging {
+li.active_time_logging {
  color: rgb(12, 167, 5);
+}
+
+ol#tracked_times {
+	list-style-type: none;
+	text-align: ;
 }

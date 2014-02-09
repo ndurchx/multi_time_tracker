@@ -2,10 +2,10 @@ class MultiTimeTrackerController < ApplicationController
   unloadable
 
   before_filter :user_logged_in
+  before_filter :find_project, :only => :add
   before_filter :is_time_tracking_active?, :only => :add
   before_filter :find_logged_time, :only => [:action] # Edit needs it, too
   before_filter :save_current_data, :only => [:action]
-  before_filter :find_project, :only => :add
   
 
   helper :timelog
@@ -23,20 +23,19 @@ class MultiTimeTrackerController < ApplicationController
   end
 
   def index
-    @tracked_times = LoggedTime.find_all_by_user_id(User.current.id)
-    @tracked_times.sort!{|x,y| x.project_id <=> y.project_id}
+    @tracked_times = LoggedTime.find_all_by_user_id(User.current.id).sort_by!{|x| x.index}
+    @user = User.current
   end
 
   def add
-    @logged_time = LoggedTime
+    @logged_time = LoggedTime.new
     @logged_time.issue_id = @issue.id
     @logged_time.user_id = User.current.id
     @logged_time.project_id = @project.id
-    @logged_time.activity_id = nil
-    @logged_time.comment = ""
+    #@logged_time.activity_id = nil
+    #@logged_time.comment = ""
     @logged_time.active = false
-    @logged_time.activated_at = nil
-    @logged_time.spent_seconds = 0
+    #@logged_time.activated_at = nil
 
     respond_to do |format|
       if @logged_time.save
@@ -48,24 +47,34 @@ class MultiTimeTrackerController < ApplicationController
       format.js {}
     end
   end
+  
+  def reorder
+    LoggedTime.reorder_list(params[:logged_data])
+    @tracked_times = LoggedTime.find_all_by_user_id(User.current.id)
+    
+    respond_to do |format|
+      format.js {render :partial => "times_list"}
+    end
+  end
 
   def edit
-    logged_time = LoggedTime.find(params[:id])
-    redirect_to :action => :index  if logged_time.active
+    @logged_time = LoggedTime.find(params[:id])
+    redirect_to :action => :index  if @logged_time.active
   end
 
   def update
-    @logged_time = LoggedTime.find(params[:logged_time][:id])
-    @logged_time.spent_seconds = params[:logged_time][:spent_seconds]
+    logged_time = LoggedTime.find(params[:logged_time][:id])
+    logged_time.spent_hours   = params[:logged_time][:spent_hours]
+    logged_time.comment       = params[:logged_time][:comment]
+    logged_time.activity_id   = params[:logged_time][:activity_id]
 
     respond_to do |format|
-      if @logged_time.update_attributes(params[:logged_time])
+      if logged_time.save
         flash[:notice] = l(:multi_time_tracker_update_successful)
       else
         flash[:error] = l(:multi_time_tracker_update_unsuccessful)
       end
       format.html { redirect_to :action => :index }
-      format.js {}
     end
   end
 
@@ -79,7 +88,6 @@ class MultiTimeTrackerController < ApplicationController
         flash[:error] = l(:multi_time_tracker_destroy_unsuccessful)
       end
       format.html { redirect_to :action => :index }
-      format.js {}
     end
   end
   
@@ -97,13 +105,11 @@ class MultiTimeTrackerController < ApplicationController
       end
 
       format.html { redirect_to :action => :index }
-      format.js {}
     end
   end
   
   def check_out
     @logged_time.check_out
-    @logged_time.save
     
     respond_to do |format|
       if @logged_time.save 
@@ -113,7 +119,6 @@ class MultiTimeTrackerController < ApplicationController
       end
       
       format.html { redirect_to :action => :index }
-      format.js {}
     end
   end
 
@@ -153,7 +158,6 @@ class MultiTimeTrackerController < ApplicationController
       end
 
       format.html { redirect_to :action => :index }
-      format.js {}
     end
   end
 

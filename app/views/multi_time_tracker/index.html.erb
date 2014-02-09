@@ -4,75 +4,17 @@
   <%= stylesheet_link_tag("multi_time_tracker", :plugin => "multi_time_tracker") %>
   <%= javascript_include_tag("upcount", :plugin => "multi_time_tracker") %>
   <%= javascript_include_tag("ui", :plugin => "multi_time_tracker") %>
+  <%= javascript_tag("var user_id = #{@user.id}") %>
 <% end %>
 
 <%= button_to((l :multi_time_tracker_export_all_button),  :action => 'export_all') %>
 
-<table class="list" id="time_tracker">
-  <tbody id="sortable">
-  <tr>
-    <th></th>    
-    <th><%= l(:multi_time_tracker_issue_table_head) %></th>
-    <th><%= l(:multi_time_tracker_comment_table_head) %></th>
-    <th><%= l(:multi_time_tracker_activity_table_head) %></th>
-    <th><%= l(:multi_time_tracker_time_table_head) %></th>
-    <th></th>
-    <th></th>
-    <th></th>
-  </tr>
-  
-  <% curr_project = nil %>
-  <% even = true %>
-  
-  <% @tracked_times.each do |time| %>
 
-    <% if(curr_project != time.project) %>
-      <% even = true %>
-      <% curr_project = time.project %>
-      <tr class="time_logger between_header">
-        <td colspan="8"><%= link_to(curr_project, project_path(curr_project)) %></td>
-      </tr>
-    <% end %>
-    
-    <tr class="standard time_logger created-by-me <% if time.active %>active<% end %> <%= cycle("even", "odd") %>">
-      <%= form_for(time, :url => { :action => "action" }, :method => :post) do |f| %>
-        <%= f.hidden_field(:id, :value => time.id) %>
-        
-        <!-- Active/inactive column -->
-        <td>
-          <% if time.active %>
-            <%= image_tag('hourglass.png', :plugin => 'multi_time_tracker') %>
-          <% else %>
-            <%= link_to(time.id, :action => 'edit', :id => time.id) %>
-          <% end %>
-        </td>
-        
-        <!-- Data fields -->
-        <td><%= link_to(time.issue, issue_path(time.issue)) %></td>
-        <td><%= f.text_field :comment, :required => true %></td>
-        <td><%= f.select :activity_id, activity_collection_for_select_options(@time_entry), :required => true %></td>
-        
-        
-        <!-- Check in and out buttons -->
-        <% if time.active %>
-          <td id="active_time_logging"><%= formatted_time(time) %></td>
-          <td><%= f.submit(l(:multi_time_tracker_check_out_button), :name => 'check_out') %></td>         
-        <% else %>
-          <td><%= formatted_time(time) %></td>
-          <td><%= f.submit(l(:multi_time_tracker_check_in_button), :name => 'check_in') %></td>
-        <% end %>
-        
-        <!-- Delete and export buttons -->
-        <td><%= f.submit l(:multi_time_tracker_export_button) ,:name => 'export' %></td>
-        <td><%= f.submit l(:multi_time_tracker_destroy_button) ,:name => 'destroy' %></td>
-      <% end %>
-    </tr>
-    
-    <% even = even ? false : true %>
-      
-  <% end %>
-  </tbody>
-</table>
+<% curr_project = nil %>
+
+<div id="times_list_space">
+  <%= render :partial => "times_list", :locals => {:tracked_times => @tracked_times} %>
+</div>
 
 <script type="text/javascript">
   if(window.addEventListener){
