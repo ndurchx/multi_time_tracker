@@ -32,5 +32,8 @@ de:
   multi_time_tracker_edit_submit_button: "Speichern"
   multi_time_tracker_edit_legend: "Bearbeiten"
   multi_time_tracker_time_tracking_inactive: "Die Zeiterfassung ist in diesem Projekt inaktiv"
+  multi_time_tracker_spent_hours_greater_zero: "müssen mehr sein als 0"
+  multi_time_tracker_destroy_confirm: "Die Zeit wird nicht automatisch exportiert. Wirklich löschen?"
+  multi_time_tracker_edit_table_head: "Bearbeiten"
   field_spent_hours_short: "Aufgewendete Stunden"
   field_comment: "Kommentar"

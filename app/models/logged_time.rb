@@ -23,7 +23,7 @@ class LoggedTime < ActiveRecord::Base
   def spent_hours_short
     h = read_attribute(:spent_hours)
     if h.is_a?(Float)
-      h.round(2)
+      h.round(4)
     else
       h
     end
@@ -57,7 +57,15 @@ class LoggedTime < ActiveRecord::Base
   end
   
   def export
-    return false if self.project.module_enabled?(:time_tracking).nil?
+    if self.project.module_enabled?(:time_tracking).nil?
+      errors.add(l("multi_time_tracker_time_tracking_inactive"))
+      return false
+    end
+    
+    if self.spent_hours == 0
+      errors.add(:spent_hours_short, l("multi_time_tracker_spent_hours_greater_zero"))
+      return false
+    end
     
     time_entry = TimeEntry.new(:project => self.project, :issue => self.issue, :user => self.user, :spent_on => User.current.today)
     time_entry.safe_attributes = { "spent_on" => User.current.today, "hours" => self.spent_hours, "activity_id" => self.activity_id, "comments" => self.comment }

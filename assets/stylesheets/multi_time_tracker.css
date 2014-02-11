@@ -1,8 +1,14 @@
-li.active_time_logging {
+td.active_time_logging {
  color: rgb(12, 167, 5);
 }
 
-ol#tracked_times {
-	list-style-type: none;
-	text-align: ;
+tbody#tracked_times {
+	text-align: center;
+}
+
+a.edit_button {
+	background-image: url('../../../images/ticket_edit.png');
+	background-position: 0% 40%;
+	background-repeat: no-repeat;
+	padding-left: 20px;
 }

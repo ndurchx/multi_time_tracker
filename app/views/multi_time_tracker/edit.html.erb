@@ -1,5 +1,15 @@
 <h2><%= l(:multi_time_tracker_header) %></h2>
 
+<% if @logged_time.errors.any? %>
+  <div id="errorExplanation">
+    <ul>
+      <% @logged_time.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+
 <fieldset class="box tabular">
   <legend><%= l(:multi_time_tracker_edit_legend) %></legend>
   <%= labelled_form_for @logged_time do |f| %>

@@ -9,18 +9,15 @@
 
 <%= button_to((l :multi_time_tracker_export_all_button),  :action => 'export_all') %>
 
-
-<% curr_project = nil %>
-
 <div id="times_list_space">
   <%= render :partial => "times_list", :locals => {:tracked_times => @tracked_times} %>
 </div>
 
-<script type="text/javascript">
+<%= javascript_tag("
   if(window.addEventListener){
       window.addEventListener('load', startLoop, false); //W3C
   }
   else{
       window.attachEvent('onload', startLoop); //IE
   }
-</script>
+") %>

@@ -4,7 +4,7 @@ class MultiTimeTrackerController < ApplicationController
   before_filter :user_logged_in
   before_filter :find_project, :only => :add
   before_filter :is_time_tracking_active?, :only => :add
-  before_filter :find_logged_time, :only => [:action] # Edit needs it, too
+  before_filter :find_logged_time, :only => [:action]
   before_filter :save_current_data, :only => [:action]
   
 
@@ -32,10 +32,7 @@ class MultiTimeTrackerController < ApplicationController
     @logged_time.issue_id = @issue.id
     @logged_time.user_id = User.current.id
     @logged_time.project_id = @project.id
-    #@logged_time.activity_id = nil
-    #@logged_time.comment = ""
     @logged_time.active = false
-    #@logged_time.activated_at = nil
 
     respond_to do |format|
       if @logged_time.save
@@ -44,13 +41,12 @@ class MultiTimeTrackerController < ApplicationController
         flash[:error] = l(:multi_time_tracker_tracking_not_created)
       end
       format.html { redirect_to :action => :index }
-      format.js {}
     end
   end
   
   def reorder
     LoggedTime.reorder_list(params[:logged_data])
-    @tracked_times = LoggedTime.find_all_by_user_id(User.current.id)
+    @tracked_times = LoggedTime.find_all_by_user_id(User.current.id).sort_by!{|x| x.index}
     
     respond_to do |format|
       format.js {render :partial => "times_list"}
@@ -72,7 +68,7 @@ class MultiTimeTrackerController < ApplicationController
       if logged_time.save
         flash[:notice] = l(:multi_time_tracker_update_successful)
       else
-        #flash[:error] = l(:multi_time_tracker_update_unsuccessful)
+        flash[:error] = l(:multi_time_tracker_update_unsuccessful)
       end
       format.html { redirect_to :action => :index }
     end
@@ -81,13 +77,13 @@ class MultiTimeTrackerController < ApplicationController
   def destroy
     @logged_time.check_out
 
-    respond_to do |format|
-      if @logged_time.export && @logged_time.destroy
+    respond_to do |format|      
+      if @logged_time.destroy
         flash[:notice] = l(:multi_time_tracker_destroy_successful)
+        format.html { redirect_to :action => :index }
       else
-        flash[:error] = l(:multi_time_tracker_destroy_unsuccessful)
+        format.html { render :action => :edit }
       end
-      format.html { redirect_to :action => :index }
     end
   end
   
@@ -130,6 +126,7 @@ class MultiTimeTrackerController < ApplicationController
       time.check_out
       if time.export
         time.reset
+        time.save
       else
         error = true
       end
@@ -153,11 +150,12 @@ class MultiTimeTrackerController < ApplicationController
       if @logged_time.export
         @logged_time.reset and @logged_time.save        
         flash[:notice] = l(:multi_time_tracker_export_successful)
+        format.html { redirect_to :action => :index }
+        format.json { render :nothing => true }
       else
-        flash[:error] = l(:multi_time_tracker_export_unsuccessful)
+        format.html { render :action => :edit }
+        format.json { render :action => :edit }        
       end
-
-      format.html { redirect_to :action => :index }
     end
   end
 
