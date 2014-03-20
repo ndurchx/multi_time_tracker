@@ -32,7 +32,6 @@ class LoggedTime < ActiveRecord::Base
   def check_out
     return unless self.active
     self.active = false
-    logger.info(self.spent_hours+(Time.now.to_f - self.activated_at.to_f)/60.0/60.0)
     self.spent_hours += (Time.now.to_f - self.activated_at.to_f)/60.0/60.0
   end
   
