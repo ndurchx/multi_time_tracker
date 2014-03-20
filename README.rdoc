@@ -8,8 +8,7 @@
 
 
 == Prerequisites
-* Installation process must be done
-* There must be any project with the 'Time tracking' module enabled
+* There must be any project with th 'Time tracking' module enabled
 
 
 == Usage
@@ -21,17 +20,21 @@ multiple tasks on the same issue.
 === Using the issue table
 At the top left menu a new link 'Multi Time Tracker' appeared. This link leads to the time tracker table.
 There you can check in and check out issues and export them to the redmine time management.
-Checking in and out means, that from the moment of checking in a row will start time measurement for itself and checking out 
-means stopping the measurement.
-If you delete a row of the issue table, this row will be removed and the measured time is lost. So better export it first.
-But you will be warned everytime you want to delete a row. 
+Checking in and out means, that from the moment of checking in a row will start time measurement for this row and checking out 
+means stopping the measurement
+If you delete a row of the issue table, this row will be checked out and exported first, so if you made a mistake,
+first check out of that issue (if neccessary) and change the spent time of that row to zero. Finally you can delete it
+without exporting anything to the redmine time management.
 Checking in a row will check out the current active row first (so there can be only one active row per user at a time).
-Now you can reorder the list as you like. Just drag&drop the rows.
+
+== Updating
+Note that it might be neccessary to re-run database migration if this plugin is updated.
+Just run 'rake redmine:plugins:migrate' like in the installation step again to be save.
 
 == What comes next
-[ ] Overview over all tracked times before "export all" will be executed.
-[ ] A better way of adding issues to the list.
-[ ] A better way of adding the same issue more than once to the list.
+Currently I'm working on ajax support for updating the comment or activity of a row as well as cloning an issue instead of 
+navigation back to an already added issue and add it again to have it multiple times in the table.
+With that stuff there will be an improved view, too, with issue grouping and the possibility to order the rows of the table.
 
 == License
 This plugin is published under the GPLv2.
