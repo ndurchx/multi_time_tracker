@@ -3,7 +3,7 @@
 
 == Installation
 1. To install this plugin just clone it in your redmine's plugins folder 
-2. Run 'rake redmine:plugins:migrate'
+2. Run +rake redmine:plugins:migrate RAILS_ENV=production+
 3. Restart your webserver
 
 
@@ -29,7 +29,7 @@ Checking in a row will check out the current active row first (so there can be o
 
 == Updating
 Note that it might be neccessary to re-run database migration if this plugin is updated.
-Just run 'rake redmine:plugins:migrate' like in the installation step again to be save.
+Just run +rake redmine:plugins:migrate RAILS_ENV=production+ like in the installation step again to be save.
 
 == What comes next
 Currently I'm working on ajax support for updating the comment or activity of a row as well as cloning an issue instead of 

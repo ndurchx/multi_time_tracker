@@ -57,12 +57,17 @@ class LoggedTime < ActiveRecord::Base
   
   def export
     if self.project.module_enabled?(:time_tracking).nil?
-      errors.add(l("multi_time_tracker_time_tracking_inactive"))
+      errors.add(:project, l('multi_time_tracker_time_tracking_inactive'))
+      return false
+    end
+
+    unless self.project.active?
+      errors.add(:project, l('multi_time_tracker_project_inactive'))
       return false
     end
     
     if self.spent_hours == 0
-      errors.add(:spent_hours_short, l("multi_time_tracker_spent_hours_greater_zero"))
+      errors.add(:spent_hours_short, l('multi_time_tracker_spent_hours_greater_zero'))
       return false
     end
     
