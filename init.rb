@@ -10,7 +10,7 @@ Redmine::Plugin.register :multi_time_tracker do
   description 'This plugin adds a new time related functionality to your redmine. Logged in users with appropriate permission
   will be able to add entries for issues to the Multi Time Tracker by clicking a link in issues view. If the user is allowed to make 
   entries to time log, he will even be able to export his tracked times to it. And don\'t be scared, all actions are fail save.'
-  version '0.1.3'
+  version '0.1.4'
   url 'https://github.com/raafael911/issue_repo_history_merge'
   author_url ''
 
