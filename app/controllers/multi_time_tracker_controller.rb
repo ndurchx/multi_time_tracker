@@ -23,7 +23,7 @@ class MultiTimeTrackerController < ApplicationController
   end
 
   def index
-    @tracked_times = LoggedTime.find_all_by_user_id(User.current.id).sort_by!{|x| x.index}
+    @tracked_times = LoggedTime.find_all_by_user_id(User.current.id)
     @user = User.current
   end
 
@@ -46,7 +46,7 @@ class MultiTimeTrackerController < ApplicationController
   
   def reorder
     LoggedTime.reorder_list(params[:logged_data])
-    @tracked_times = LoggedTime.find_all_by_user_id(User.current.id).sort_by!{|x| x.index}
+    @tracked_times = LoggedTime.find_all_by_user_id(User.current.id)
     
     respond_to do |format|
       format.js {render :partial => "times_list"}
