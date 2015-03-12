@@ -71,4 +71,8 @@ class LoggedTime < ActiveRecord::Base
     return time_entry.save
   end
   
+  def is_used?
+    return (self.spent_hours > 0 or self.active)
+  end
+
 end
