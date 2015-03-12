@@ -127,14 +127,14 @@ class MultiTimeTrackerController < ApplicationController
       if time.export
         time.reset
         time.save
-      else
+      elsif time.is_used?
         error = true
       end
     end
 
     respond_to do |format|
       if error
-        flash[:notice] = l(:multi_time_tracker_export_all_unsuccessful)
+        flash[:error] = l(:multi_time_tracker_export_all_unsuccessful)
       else
         flash[:notice] = l(:multi_time_tracker_export_all_successful)
       end
