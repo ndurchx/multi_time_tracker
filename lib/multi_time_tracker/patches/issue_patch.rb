@@ -22,7 +22,7 @@ module MultiTimeTracker
         end
 
         def update_tracked_times_for_issue
-          tracked_times = LoggedTime.find_all_by_user_id_and_issue_id(User.current.id, self.id)
+          tracked_times = LoggedTime.where(user_id: User.current.id, issue_id: self.id)
           tracked_times.each do |time|
             time.project_id = self.project.id
             time.save

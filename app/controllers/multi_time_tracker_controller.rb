@@ -23,7 +23,7 @@ class MultiTimeTrackerController < ApplicationController
   end
 
   def index
-    @tracked_times = LoggedTime.find_all_by_user_id(User.current.id).sort_by!{|x| x.index}
+    @tracked_times = LoggedTime.where(user_id: User.current.id).order(index: :asc)
     @user = User.current
   end
 
@@ -46,7 +46,7 @@ class MultiTimeTrackerController < ApplicationController
   
   def reorder
     LoggedTime.reorder_list(params[:logged_data])
-    @tracked_times = LoggedTime.find_all_by_user_id(User.current.id).sort_by!{|x| x.index}
+    @tracked_times = LoggedTime.where(user_id: User.current.id).order(index: :asc)
     
     respond_to do |format|
       format.js {render :partial => "times_list"}
@@ -119,7 +119,7 @@ class MultiTimeTrackerController < ApplicationController
   end
 
   def export_all
-    logged_times = LoggedTime.find_all_by_user_id(User.current.id)
+    logged_times = LoggedTime.where(user_id: User.current.id)
     error        = false
 
     logged_times.each do |time|
@@ -166,14 +166,14 @@ class MultiTimeTrackerController < ApplicationController
   end
 
   def find_project
-    @issue = Issue.find_by_id(params[:issue_id])
-    @project = Project.find_by_id(@issue.project_id)
+    @issue = Issue.find(params[:issue_id])
+    @project = Project.find(@issue.project_id)
     rescue ActiveRecord::RecordNotFound
     render_404
   end
 
   def find_logged_time
-    @logged_time = LoggedTime.find_by_id(params[:logged_time][:id])
+    @logged_time = LoggedTime.find(params[:logged_time][:id])
     rescue ActiveRecord::RecordNotFound
     render_404
   end
