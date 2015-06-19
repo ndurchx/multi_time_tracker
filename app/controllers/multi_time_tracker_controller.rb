@@ -23,8 +23,8 @@ class MultiTimeTrackerController < ApplicationController
   end
 
   def index
-    @tracked_times = LoggedTime.where(user_id: User.current.id).order(index: :asc)
     @user = User.current
+    @tracked_times = LoggedTime.where(user_id: @user.id).order(index: :asc)
   end
 
   def add
