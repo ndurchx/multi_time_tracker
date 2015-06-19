@@ -56,7 +56,7 @@ class LoggedTime < ActiveRecord::Base
   end
   
   def export(usr=User.current)    
-    if self.project.module_enabled?(:time_tracking).nil?
+    unless self.project.enabled_module_names.include?('time_tracking')
       errors.add(:project, l('multi_time_tracker_time_tracking_inactive'))
       return false
     end
