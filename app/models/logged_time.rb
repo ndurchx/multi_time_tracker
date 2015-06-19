@@ -55,7 +55,7 @@ class LoggedTime < ActiveRecord::Base
     end
   end
   
-  def export
+  def export(usr=User.current)    
     if self.project.module_enabled?(:time_tracking).nil?
       errors.add(:project, l('multi_time_tracker_time_tracking_inactive'))
       return false
@@ -71,9 +71,12 @@ class LoggedTime < ActiveRecord::Base
       return false
     end
     
-    time_entry = TimeEntry.new(:project => self.project, :issue => self.issue, :user => self.user, :spent_on => User.current.today)
-    time_entry.safe_attributes = { "spent_on" => User.current.today, "hours" => self.spent_hours, "activity_id" => self.activity_id, "comments" => self.comment }
-    return time_entry.save
+    return TimeEntry.create(:spent_on => self.user.today,
+                          :hours    => self.spent_hours,
+                          :issue    => self.issue,
+                          :user     => self.user,
+                          :activity => self.activity,
+                          :comments => self.comment)
   end
   
   def is_used?
