@@ -144,17 +144,19 @@ class MultiTimeTrackerController < ApplicationController
   end
 
   def export
+    @logged_time.comment       = params[:logged_time][:comment]
+    @logged_time.activity_id   = params[:logged_time][:activity_id]
     @logged_time.check_out
 
     respond_to do |format|
       if @logged_time.export
-        @logged_time.reset and @logged_time.save        
+        @logged_time.reset and @logged_time.save
         flash[:notice] = l(:multi_time_tracker_export_successful)
         format.html { redirect_to :action => :index }
         format.json { render :nothing => true }
       else
         format.html { render :action => :edit }
-        format.json { render :action => :edit }        
+        format.json { render :action => :edit }
       end
     end
   end

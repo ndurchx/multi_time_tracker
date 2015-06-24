@@ -12,12 +12,12 @@ logged_times_002:
   activity_id: 9
   id: 2
   comment: Second logged time
-  issue_id: 1
+  issue_id: 2
   user_id: 1
   project_id: 1
   active: false
   spent_hours: 0.4
-  activated_at: <%= Time.now - 1000 %>
+  activated_at: <%= Time.now - 100 %>
 logged_times_003:
   activity_id: 9
   id: 3
