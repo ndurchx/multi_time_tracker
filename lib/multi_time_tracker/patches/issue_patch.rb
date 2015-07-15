@@ -15,10 +15,7 @@ module MultiTimeTracker
       module InstanceMethods
 
         def remove_tracked_times_for_issue
-          tracked_times = LoggedTime.find_all_by_user_id_and_issue_id(User.current.id, self.id)
-          tracked_times.each do |time|
-            time.destroy
-          end
+          tracked_times = LoggedTime.destroy_all(user_id: User.current.id, issue_id: self.id)
         end
 
         def update_tracked_times_for_issue
@@ -27,8 +24,8 @@ module MultiTimeTracker
             time.project_id = self.project.id
             time.save
           end
-        end        
-        
+        end
+
         def add_issue_to_time_tracker
           if User.current.pref[:add_new_issues_to_multi_time_tracker_enabled]
             logged_time = LoggedTime.new
