@@ -1,16 +1,15 @@
 class MultiTimeTrackerController < ApplicationController
   unloadable
 
-  before_filter :user_logged_in
-  before_filter :find_project, :only => :add
-  before_filter :is_time_tracking_active?, :only => :add
-  before_filter :find_logged_time, :only => [:action]
-  before_filter :save_current_data, :only => [:action]
-  
+  before_action :user_logged_in
+  before_action :find_project, :only => :add
+  before_action :is_time_tracking_active?, :only => :add
+  before_action :find_logged_time, :only => [:form]
+  before_action :save_current_data, :only => [:form]
 
   helper :timelog
-  
-  def action
+
+  def form
     if params[:check_in]
       check_in
     elsif params[:check_out]
@@ -19,7 +18,7 @@ class MultiTimeTrackerController < ApplicationController
       destroy
     elsif params[:export]
       export
-    end  
+    end
   end
 
   def index
@@ -43,11 +42,11 @@ class MultiTimeTrackerController < ApplicationController
       format.html { redirect_to :action => :index }
     end
   end
-  
+
   def reorder
     LoggedTime.reorder_list(params[:logged_data])
     @tracked_times = LoggedTime.where(user_id: User.current.id).order(index: :asc)
-    
+
     respond_to do |format|
       format.js {render :partial => "times_list"}
     end
@@ -77,7 +76,7 @@ class MultiTimeTrackerController < ApplicationController
   def destroy
     @logged_time.check_out
 
-    respond_to do |format|      
+    respond_to do |format|
       if @logged_time.destroy
         flash[:notice] = l(:multi_time_tracker_destroy_successful)
         format.html { redirect_to :action => :index }
@@ -86,13 +85,13 @@ class MultiTimeTrackerController < ApplicationController
       end
     end
   end
-  
+
   def check_in
     current = LoggedTime.current
     current.check_out if current
-    
+
     @logged_time.check_in(params[:logged_time])
-    
+
     respond_to do |format|
       if (current.nil? || current.save) && @logged_time.save
         flash[:notice] = l(:multi_time_tracker_check_in_successful)
@@ -103,17 +102,17 @@ class MultiTimeTrackerController < ApplicationController
       format.html { redirect_to :action => :index }
     end
   end
-  
+
   def check_out
     @logged_time.check_out
-    
+
     respond_to do |format|
-      if @logged_time.save 
+      if @logged_time.save
         flash[:notice] = l(:multi_time_tracker_check_out_successful)
       else
         flash[:notice] = l(:multi_time_tracker_check_out_successful)
       end
-      
+
       format.html { redirect_to :action => :index }
     end
   end
@@ -162,7 +161,7 @@ class MultiTimeTrackerController < ApplicationController
   end
 
   private
-  
+
   def save_current_data
     @logged_time.update_attributes(params[:logged_time])
   end
