@@ -37,4 +37,5 @@ en:
   multi_time_tracker_destroy_confirm: "Time will not be exported automatically. Continue?"
   multi_time_tracker_edit_table_head: "Edit"
   field_spent_hours_short: "Spent hours"
-  field_comment: "Kommentar"
+  field_comment: "Comment"
+  field_add_new_issues_to_multi_time_tracker_enabled: "Add new issues immediately to Multi Time Tracker"

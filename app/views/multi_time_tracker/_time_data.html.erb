@@ -16,6 +16,8 @@
     <% end %>
     
     <!-- Delete and export buttons -->
-    <td><%= f.submit l(:multi_time_tracker_export_button), :name => 'export' %></td>
+    <td>
+      <%= f.submit l(:multi_time_tracker_export_button), :name => 'export', :disabled => !time.project.enabled_module_names.include?('time_tracking') %>
+    </td>
     <td><%= f.submit l(:multi_time_tracker_destroy_button), :name => 'destroy', :onclick => "$('#logged_data_#{time.id} :nth-child(5) > input').val(' '); return confirm('#{l('multi_time_tracker_destroy_confirm')}')" %></td>
 <% end %>

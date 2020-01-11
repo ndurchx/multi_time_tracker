@@ -23,8 +23,8 @@ class MultiTimeTrackerController < ApplicationController
   end
 
   def index
-    @tracked_times = LoggedTime.find_all_by_user_id(User.current.id).sort_by!{|x| x.index}
     @user = User.current
+    @tracked_times = LoggedTime.where(user_id: @user.id).order(index: :asc)
   end
 
   def add
@@ -46,7 +46,7 @@ class MultiTimeTrackerController < ApplicationController
   
   def reorder
     LoggedTime.reorder_list(params[:logged_data])
-    @tracked_times = LoggedTime.find_all_by_user_id(User.current.id).sort_by!{|x| x.index}
+    @tracked_times = LoggedTime.where(user_id: User.current.id).order(index: :asc)
     
     respond_to do |format|
       format.js {render :partial => "times_list"}
@@ -119,7 +119,7 @@ class MultiTimeTrackerController < ApplicationController
   end
 
   def export_all
-    logged_times = LoggedTime.find_all_by_user_id(User.current.id)
+    logged_times = LoggedTime.where(user_id: User.current.id)
     error        = false
 
     logged_times.each do |time|
@@ -127,14 +127,14 @@ class MultiTimeTrackerController < ApplicationController
       if time.export
         time.reset
         time.save
-      else
+      elsif time.is_used?
         error = true
       end
     end
 
     respond_to do |format|
       if error
-        flash[:notice] = l(:multi_time_tracker_export_all_unsuccessful)
+        flash[:error] = l(:multi_time_tracker_export_all_unsuccessful)
       else
         flash[:notice] = l(:multi_time_tracker_export_all_successful)
       end
@@ -144,17 +144,19 @@ class MultiTimeTrackerController < ApplicationController
   end
 
   def export
+    @logged_time.comment       = params[:logged_time][:comment]
+    @logged_time.activity_id   = params[:logged_time][:activity_id]
     @logged_time.check_out
 
     respond_to do |format|
       if @logged_time.export
-        @logged_time.reset and @logged_time.save        
+        @logged_time.reset and @logged_time.save
         flash[:notice] = l(:multi_time_tracker_export_successful)
         format.html { redirect_to :action => :index }
         format.json { render :nothing => true }
       else
         format.html { render :action => :edit }
-        format.json { render :action => :edit }        
+        format.json { render :action => :edit }
       end
     end
   end
@@ -166,14 +168,14 @@ class MultiTimeTrackerController < ApplicationController
   end
 
   def find_project
-    @issue = Issue.find_by_id(params[:issue_id])
-    @project = Project.find_by_id(@issue.project_id)
+    @issue = Issue.find(params[:issue_id])
+    @project = Project.find(@issue.project_id)
     rescue ActiveRecord::RecordNotFound
     render_404
   end
 
   def find_logged_time
-    @logged_time = LoggedTime.find_by_id(params[:logged_time][:id])
+    @logged_time = LoggedTime.find(params[:logged_time][:id])
     rescue ActiveRecord::RecordNotFound
     render_404
   end
