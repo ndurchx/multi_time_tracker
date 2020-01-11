@@ -163,7 +163,9 @@ class MultiTimeTrackerController < ApplicationController
   private
 
   def save_current_data
-    @logged_time.update_attributes(params[:logged_time])
+    @logged_time.comment       = params[:logged_time][:comment]
+    @logged_time.activity_id   = params[:logged_time][:activity_id]
+    @logged_time.save
   end
 
   def find_project
