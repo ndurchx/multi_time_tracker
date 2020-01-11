@@ -1,20 +1,20 @@
-<%= form_for(time, :url => { :action => "action" }, :method => :post) do |f| %>
+<%= form_for(time, :url => { :action => "form" }, :method => :post) do |f| %>
     <%= f.hidden_field(:id, :value => time.id) %>
-    
+
     <td><%= link_to(time.id, { :action => 'edit', :id => time.id }, :class => "edit_button") %></td>
-    
+
     <td><%= link_to(time.issue, issue_path(time.issue)) %></td>
     <td><%= f.text_field :comment, :required => true %></td>
     <td><%= f.select :activity_id, activity_collection_for_select_options(@time_entry), :required => true %></td>
-    
+
     <% if time.active %>
       <td id="active_time_logging" class="saved_time"><%= formatted_time(time) %></td>
-      <td><%= f.submit(l(:multi_time_tracker_check_out_button), :name => 'check_out') %></td>         
+      <td><%= f.submit(l(:multi_time_tracker_check_out_button), :name => 'check_out') %></td>
     <% else %>
       <td class="saved_time"><%= formatted_time(time) %></td>
       <td><%= f.submit(l(:multi_time_tracker_check_in_button), :name => 'check_in') %></td>
     <% end %>
-    
+
     <!-- Delete and export buttons -->
     <td>
       <%= f.submit l(:multi_time_tracker_export_button), :name => 'export', :disabled => !time.project.enabled_module_names.include?('time_tracking') %>
