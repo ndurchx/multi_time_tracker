@@ -1,6 +1,5 @@
 class LoggedTime < ActiveRecord::Base
   unloadable
-  include Redmine::SafeAttributes
 
   belongs_to :project
   belongs_to :issue
